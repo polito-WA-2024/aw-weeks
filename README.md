@@ -1,3 +1,3 @@
 # wa-weeks
 
-Exercises and exampled developed during the lectures
+Exercises and examples developed during the lectures
