@@ -53,7 +53,7 @@ exports.listAnswersByQuestion = (questionId) => {
   });
 };
 
-// add a new answer, return the newly created object, re-read from DB
+// add a new answer, return the newly created ID from DB
 exports.createAnswer = (answer) => {
   return new Promise((resolve, reject) => {
     const sql = 'INSERT INTO answers(text, respondent, score, date, questionId) VALUES(?, ?, ?, DATE(?), ?)';

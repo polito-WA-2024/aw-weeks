@@ -5,7 +5,7 @@ const sqlite = require('sqlite3');
 const dayjs = require('dayjs');
 
 // open the database
-const db = new sqlite.Database('qa.db', (err) => {
+const db = new sqlite.Database('qa2.db', (err) => {
   if(err) throw err;
 });
 
@@ -53,11 +53,17 @@ exports.listAnswersByQuestion = (questionId) => {
   });
 };
 
-// add a new answer, return the newly created ID from DB
-exports.createAnswer = (answer) => {
+// add a new answer, return the ID created by the database
+exports.createAnswer = (ans) => {
   return new Promise((resolve, reject) => {
-    const sql = 'INSERT INTO answers(text, respondent, score, date, questionId) VALUES(?, ?, ?, DATE(?), ?)';
-    db.run(sql, [answer.text, answer.respondent, answer.score, answer.date, answer.questionId], function (err) {
+
+    //NB: This is BUGGY CODE, vulnerable to SQL injection. DO NOT USE.
+    const sql = `INSERT INTO answers(questionId, respondent, score, date, text)
+	VALUES(${ans.questionId}, '${ans.respondent}', ${ans.score}, DATE('${ans.date}'), '${ans.text}')`;
+    //NB: This is BUGGY CODE, vulnerable to SQL injection. DO NOT USE.
+    console.log("SQL statement to be executed: "+sql);
+
+    db.run(sql, function (err) {
       if (err) {
         reject(err);
         return;
