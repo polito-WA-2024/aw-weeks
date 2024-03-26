@@ -66,3 +66,17 @@ exports.createAnswer = (answer) => {
     });
   });
 };
+
+// update the answer
+exports.updateAnswer = (answer) => {
+  return new Promise((resolve, reject) => {
+    const sql = 'UPDATE answers SET text=?, respondent=?, score=?, date=DATE(?) WHERE id=?';
+    db.run(sql, [answer.text, answer.respondent, answer.score, answer.date, answer.questionId], function (err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(this.changes);
+    });
+  });
+};

@@ -2,6 +2,7 @@
 
 const express = require('express');
 const morgan = require('morgan');
+const {check, validationResult} = require('express-validator');
 
 const dao = require('./dao'); // module for accessing the DB.  NB: use ./ syntax for files in the same dir
 
@@ -42,6 +43,14 @@ app.get('/api/questions/:id/answers', async (req, res) => {
   
 // POST /api/answers
 app.post('/api/answers', async (req, res) => {
+
+  /* Not yet working because getQuestion is not implemented yet
+  const resultQuestion = await dao.getQuestion(req.body.questionId);
+  if (resultQuestion.error) {
+    return res.status(404).json({error: 'Question not found'});
+  }
+  */
+ 
   const answer = {
     questionId: req.body.questionId,
     score: req.body.score,
@@ -53,6 +62,34 @@ app.post('/api/answers', async (req, res) => {
   try {
     const newId = await dao.createAnswer(answer);
     res.status(201).json(newId);  // could also be the whole object including the newId
+  } catch (err) {
+    res.status(503).json({ error: `Database error during the creation of the answer` });
+  }
+}
+);
+
+// UPDATE /api/answers/<id>
+app.put('/api/answers/:id', [
+  check('id').isInt(),
+  check('respondent').isLength({min: 2})
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()});
+  }
+
+
+  const answer = {
+    questionId: req.body.questionId,
+    score: req.body.score,
+    date: req.body.date,
+    text: req.body.text,
+    respondent: req.body.respondent,
+  };
+
+  try {
+    const numRowChanges = await dao.updateAnswer(answer);
+    res.status(200).json(numRowChanges);  // could also be the whole object including the newId
   } catch (err) {
     res.status(503).json({ error: `Database error during the creation of the answer` });
   }

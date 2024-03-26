@@ -10,6 +10,17 @@ Content-Type: application/json
     "respondent": "Bob",
     "score": 0,
     "date": "2024-05-06",
-    "questionId": 1
+    "questionId": 1234
 }
 
+###
+PUT http://localhost:3001/api/answers/5 HTTP/1.1
+Content-Type: application/json
+
+{
+    "text": "Text of the new answer",
+    "respondent": "Bob",
+    "score": 0,
+    "date": "2024-05-06",
+    "questionId": 1
+}

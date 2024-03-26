@@ -6,7 +6,13 @@ The `qa-server` presents some APIs to perform some CRUD (Create, Read, Update, D
 
 `GET /api/questions`  
 `GET /api/questions/<id>/answers`  
-`POST /api/answers`  
+`POST /api/answers`
+`DELETE /api/answers/<id>`
+`PUT /api/answers/<id>`
+
+Vote an answer: incrementing or decrementing the score of an answer
+`POST /api/answers/<id>/vote`
+
 ...  
 
 ### List Questions
@@ -80,4 +86,23 @@ The `qa-server` presents some APIs to perform some CRUD (Create, Read, Update, D
 ### Vote an Answer
 
 ### Delete an Answer
+
+### Update an Answer
+* `PUT /api/answers/<id>`
+* Description: Update an answer by sending the whole content.
+* Request body: An object representing an answer (Content-Type: `application/json`).
+
+```
+{
+    "text": "for of",
+    "respondent": "Alice",
+    "score": 3,
+    "date": "2023-03-07",
+    "questionId": 1
+}
+```
+
+* Response: `200 OK` (success) or `503 Service Unavailable` (generic error)
+* Response body: _None_
+
 
