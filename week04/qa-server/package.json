@@ -1,5 +1,5 @@
 {
-  "name": "qa-server-v1",
+  "name": "qa-server",
   "version": "1.0.0",
   "description": "The `qa-server` presents some APIs to perform CRUD (Create, Read, Update, Delete) operations on the answers.",
   "main": "index.js",
