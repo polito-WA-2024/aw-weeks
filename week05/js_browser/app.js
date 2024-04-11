@@ -23,17 +23,23 @@ function Answer(id, text, respondent, score, date, questionId) {
     this.str = function() { return `${this.id}: ${this.text} (by ${this.respondent}) on ${this.date.format('YYYY-MM-DD')}, score: ${this.score}, questionId: ${this.questionId}`}
 }
 
+function vote(id) {
+    // Modify the score corresponding to the id
+    answerList.forEach(e => { if (e.id==id) e.score+=1 } );
+    //alternative:
+    //answerList = answerList.map(e => e.id==id? Object.assign({}, e, {score: e.score+1}) : e );
+ 
+    // Delete the full list
+    clearAnswers();
 
+    // Recreate the full list starting from the data structure
+    createAnswerList(answerList);
+}
 
-// --- Main --- //
-
-// Create data structure
-let answerList = ANSWERS.map(e => new Answer(...e));
-
-answerList.forEach(e => console.log(e.str()));
-
-// Populate the list in the HTML ...
-// ...
+function clearAnswers() {
+    const tableBody = document.querySelector('tbody');
+    tableBody.innerHTML = "";  // Be careful using innerHTML for XSS, however with constant strings this is safe
+}
 
 function createAnswerNode(ans) {
 
@@ -76,8 +82,6 @@ function createAnswerNode(ans) {
 
 }
 
-
-
 function createAnswerList(answerList) {
     //const tableBody = document.querySelector('tbody');
     const tableBody = document.getElementById('answers');
@@ -85,6 +89,14 @@ function createAnswerList(answerList) {
         const newRow = createAnswerNode(ans);
         tableBody.appendChild(newRow);
     }
+    
 }
 
+// --- Main --- //
+
+// Create data structure
+let answerList = ANSWERS.map(e => new Answer(...e));
+
+// Populate the list
 createAnswerList(answerList);
+
