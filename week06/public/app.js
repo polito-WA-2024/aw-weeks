@@ -36,7 +36,7 @@ function createAnswerNode(ans) {
     newTd1.appendChild(newContentDate);
 
     const newTd2 = document.createElement("td");
-    newTd2.innerHTML = ans.text;
+    newTd2.innerHTML = ans.text;     // Be careful about XSS: value must be sanitized
     //const newContentText = document.createTextNode(ans.text);
     //newTd2.appendChild(newContentText);
     
