@@ -36,8 +36,9 @@ function createAnswerNode(ans) {
     newTd1.appendChild(newContentDate);
 
     const newTd2 = document.createElement("td");
-    const newContentText = document.createTextNode(ans.text);
-    newTd2.appendChild(newContentText);
+    newTd2.innerHTML = ans.text;
+    //const newContentText = document.createTextNode(ans.text);
+    //newTd2.appendChild(newContentText);
     
     const newTd3 = document.createElement("td");
     const newContentRespondent = document.createTextNode(ans.respondent);

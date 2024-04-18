@@ -5,6 +5,12 @@ const morgan = require('morgan'); // logging middleware
 const {check, validationResult} = require('express-validator'); // validation middleware
 const dao = require('./dao'); // module for accessing the DB.  NB: use ./ syntax for files in the same dir
 
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
+
+
 // init express
 const app = express();
 const port = 3001;
@@ -50,8 +56,10 @@ app.get('/api/questions/:id/answers', async (req, res) => {
       //console.log("length: "+result.length);
       if (result.error)
         res.status(404).json(result);
-      else
-        res.json(result);  // NB: list of answers can also be an empty array
+      else {
+        const resultsPurified = result.map(e => Object.assign({}, e, {text: DOMPurify.sanitize(e.text)}));
+        res.json(resultsPurified);  // NB: list of answers can also be an empty array
+      }
     }
   } catch(err) {
     res.status(500).end();
