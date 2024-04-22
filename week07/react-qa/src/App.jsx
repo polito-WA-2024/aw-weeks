@@ -9,6 +9,39 @@ const question = new Question(1, 'Best way of enumerating an array in JS?', 'Enr
 question.init();
 const answerList = question.getAnswers();
 
+function MyFooter(props) {
+  return (
+    <footer>
+      <p>&copy; Web Applications</p>
+      <div id="time"></div>
+    </footer>
+  );
+}
+
+function MyHeader(props) {
+  return (
+    <Navbar bg="primary" variant="dark">
+      <Navbar.Brand className="mx-2">
+        <i className="bi bi-collection-play" />
+        {props.appName || "HeapOverrun"}
+      </Navbar.Brand>
+    </Navbar>
+  );
+}
+
+function AnswerRow(props) {
+  const e = props.answer;
+  return (
+    <tr>
+      <td>{e.date.format("YYYY-MM-DD")}</td>
+      <td>{e.text}</td>
+      <td>{e.respondent}</td>
+      <td>{e.score}</td>
+      <td><Button variant="primary">Vote</Button></td>
+    </tr>
+  );
+}
+
 
 function App() {
 
@@ -16,12 +49,7 @@ function App() {
     <Container fluid>
       <Row>
         <Col>
-          <Navbar bg="primary" variant="dark">
-            <Navbar.Brand className="mx-2">
-              <i className="bi bi-collection-play" />
-              HeapOverrun
-            </Navbar.Brand>
-          </Navbar>
+          <MyHeader />
         </Col>
       </Row>
       <Row>
@@ -39,7 +67,7 @@ function App() {
       </Row>
       <Row>
         <Col>
-          <table>
+          <Table>
             <thead>
               <tr>
                 <th>Date</th>
@@ -50,24 +78,15 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>2024-03-07</td>
-                <td>for of</td>
-                <td>Alice</td>
-                <td>3</td>
-                <td><button className='btn btn-primary'>Vote</button></td>
-              </tr>
+              { answerList.map((e, index) => <AnswerRow key={index} answer={e} /> ) }
             </tbody>
-          </table>
+          </Table>
         </Col>
       </Row>
 
       <Row>
         <Col>
-          <footer>
-            <p>&copy; Web Applications</p>
-            <div id="time"></div>
-          </footer>
+          <MyFooter />
         </Col>
       </Row>
     </Container>
