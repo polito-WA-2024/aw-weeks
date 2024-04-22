@@ -23,6 +23,7 @@ function MyHeader(props) {
     <Navbar bg="primary" variant="dark">
       <Navbar.Brand className="mx-2">
         <i className="bi bi-collection-play" />
+        {/* props.appName just in case you want to set a different app name */}
         {props.appName || "HeapOverrun"}
       </Navbar.Brand>
     </Navbar>
@@ -42,6 +43,52 @@ function AnswerRow(props) {
   );
 }
 
+function MyTable(props) {
+  return (
+    <Table>
+      {/* <Table striped bordered hover> */}
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Text</th>
+          <th>Author</th>
+          <th>Score</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>        
+        {/* the key can also be the answer id, if unique */}
+				{props.listOfAnswers.map( (e,index) => 
+				 <AnswerRow key={index} answer={e} /> )
+        }
+      </tbody>
+    </Table>
+  )
+}
+
+function Main(props) {
+  return (<>
+    <Row>
+      <Col xs={9}>
+        <p className="question">Best way of enumerating an array in JS?</p>
+      </Col>
+      <Col xs={3}>
+        <p className="question">Author: Enrico</p>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        <h2>Current Answers</h2>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        <MyTable listOfAnswers={answerList} />
+      </Col>
+    </Row>
+  </>
+  );
+}
 
 function App() {
 
@@ -52,38 +99,7 @@ function App() {
           <MyHeader />
         </Col>
       </Row>
-      <Row>
-        <Col xs={9}>
-          <p className="question">Best way of enumerating an array in JS?</p>
-        </Col>
-        <Col xs={3}>
-          <p className="question">Author: Enrico</p>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <h2>Current Answers</h2>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Text</th>
-                <th>Author</th>
-                <th>Score</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              { answerList.map((e, index) => <AnswerRow key={index} answer={e} /> ) }
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
-
+      <Main />
       <Row>
         <Col>
           <MyFooter />
