@@ -5,7 +5,7 @@ import './App.css';
 
 import { Question } from './QAModels.js';
 
-const question = new Question;
+const question = new Question(1, 'Best way of enumerating an array in JS?', 'Enrico', '2024-03-01');
 question.init();
 const answerList = question.getAnswers();
 
