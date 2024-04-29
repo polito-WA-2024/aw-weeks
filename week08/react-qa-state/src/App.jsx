@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useState } from 'react';
 import { Col, Container, Row, Navbar } from 'react-bootstrap';
 import './App.css';
 
@@ -10,7 +11,7 @@ import { Question } from './QAModels.js';
 
 const question = new Question(1, 'Best way of enumerating an array in JS?', 'Enrico', '2024-03-01');
 question.init();
-const answerList = question.getAnswers();
+const initialAnswerList = question.getAnswers();
 
 
 function MyHeader(props) {
@@ -37,6 +38,16 @@ function MyFooter(props) {
 
 function Main(props) {
 
+  const [ answers, setAnswers] = useState(initialAnswerList);
+
+  function voteAnswer(id) {
+
+    setAnswers( answerList =>
+      answerList.map( e => e.id===id ? Object.assign({}, e, {score: e.score+1}) : e)
+    )
+
+  }
+
   return (<>
     <Row>
       <QuestionDescription question={question} />
@@ -48,7 +59,7 @@ function Main(props) {
     </Row>
     <Row>
       <Col>
-        <AnswerTable listOfAnswers={answerList} />
+        <AnswerTable listOfAnswers={answers} vote={voteAnswer} />
       </Col>
     </Row>
   </>

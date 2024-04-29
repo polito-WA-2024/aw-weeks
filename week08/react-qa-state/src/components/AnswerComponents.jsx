@@ -10,7 +10,7 @@ function AnswerRow(props) {
         <td>{e.text}</td>
         <td>{e.respondent}</td>
         <td>{e.score}</td>
-        <td><Button variant="primary">Vote</Button></td>
+        <td><Button variant="primary" onClick={()=>props.vote(e.id)}>Vote</Button></td>
       </tr>
     );
   }
@@ -31,7 +31,7 @@ function AnswerRow(props) {
         <tbody>        
           {/* the key can also be the answer id, if unique */}
                   {props.listOfAnswers.map( (e,index) => 
-                   <AnswerRow key={index} answer={e} /> )
+                   <AnswerRow key={index} answer={e}  vote={props.vote} /> )
           }
         </tbody>
       </Table>
