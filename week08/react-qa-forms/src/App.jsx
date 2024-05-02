@@ -55,6 +55,15 @@ function Main(props) {
     );
   }
 
+  function addAnswer(answer) {
+    setAnswers( answerList => {
+      const newId = Math.max(...answerList.map(e=>e.id))+1;
+      answer.id = newId;
+      return [...answerList, answer];
+    }
+    );
+  }
+
   return (<>
     <Row>
       <QuestionDescription question={question} />
@@ -71,7 +80,9 @@ function Main(props) {
     </Row>
     <Row>
       <Col>
-          {showForm? <AnswerForm closeForm={()=> setShowForm(false)} /> 
+          {showForm? <AnswerForm closeForm={()=> setShowForm(false)}
+            addAnswer={addAnswer}
+           /> 
           : <Button onClick={()=>setShowForm(true)}>Add</Button>}
       </Col>
     </Row>

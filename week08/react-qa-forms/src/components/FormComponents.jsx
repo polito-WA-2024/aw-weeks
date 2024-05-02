@@ -13,6 +13,16 @@ function AnswerForm(props) {
         event.preventDefault();
         //console.log('Submit was clicked');
 
+        const e = {
+            text: text,
+            respondent: respondent,
+            score: score,
+            date: dayjs(date)
+        }
+
+        props.addAnswer(e);
+        props.closeForm();
+
     }
 
     function handleScore(event) {
