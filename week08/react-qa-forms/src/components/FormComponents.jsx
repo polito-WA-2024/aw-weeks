@@ -15,31 +15,35 @@ function AnswerForm(props) {
 
     }
 
+    function handleScore(event) {
+        setScore(parseInt(event.target.value));
+    }
+
     return (
         <>
         <Form onSubmit={handleSubmit}>
             <Form.Group>
                 <Form.Label>Date</Form.Label>
-                <Form.Control type="date" name="date" value={date} onChange={()=> undefined} />
+                <Form.Control type="date" name="date" value={date} onChange={(event)=> setDate(event.target.value)} />
             </Form.Group>
 
             <Form.Group>
                 <Form.Label>Text</Form.Label>
-                <Form.Control type="text" name="text" value={text} onChange={()=> undefined} />
+                <Form.Control type="text" name="text" value={text} onChange={(event)=> setText(event.target.value)} />
             </Form.Group>
 
             <Form.Group>
                 <Form.Label>Respondent</Form.Label>
-                <Form.Control type="text" name="respondent" value={respondent} onChange={()=> undefined} />
+                <Form.Control type="text" name="respondent" value={respondent} onChange={(event) => setRespondent(event.target.value)} />
             </Form.Group>
 
             <Form.Group>
                 <Form.Label>Score</Form.Label>
-                <Form.Control type="number" name="score" value={score} onChange={()=> undefined} />
+                <Form.Control type="number" name="score" value={score} onChange={handleScore} />
             </Form.Group>
 
             <Button type='submit' variant="primary">{'Add'}</Button>
-            <Button variant='warning' onClick={()=> undefined}>Cancel</Button>
+            <Button variant='warning' onClick={props.closeForm}>Cancel</Button>
         </Form>
         </>
     );

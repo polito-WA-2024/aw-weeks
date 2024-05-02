@@ -40,6 +40,8 @@ function MyFooter(props) {
 function Main(props) {
 
   const [ answers, setAnswers ] = useState(initialAnswerList);
+
+  const [ showForm, setShowForm ] = useState(false);
   
   function voteAnswer(id, delta) {
     setAnswers( answerList => 
@@ -69,7 +71,8 @@ function Main(props) {
     </Row>
     <Row>
       <Col>
-          <AnswerForm />
+          {showForm? <AnswerForm closeForm={()=> setShowForm(false)} /> 
+          : <Button onClick={()=>setShowForm(true)}>Add</Button>}
       </Col>
     </Row>
   </>
