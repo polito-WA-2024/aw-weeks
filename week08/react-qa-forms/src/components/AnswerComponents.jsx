@@ -43,7 +43,8 @@ function AnswerRow(props) {
         <tbody>        
           {/* the key can also be the answer id, if unique */}
                   {props.listOfAnswers.map( (e,index) => 
-                   <AnswerRow key={index} answer={e} vote={props.vote} delete={props.delete} edit={props.edit} /> )
+                   <AnswerRow key={index} answer={e} vote={props.vote} 
+                   delete={props.delete} edit={props.edit} /> )
           }
         </tbody>
       </Table>

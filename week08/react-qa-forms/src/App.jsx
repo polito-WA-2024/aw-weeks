@@ -42,6 +42,8 @@ function Main(props) {
   const [ answers, setAnswers ] = useState(initialAnswerList);
 
   const [ showForm, setShowForm ] = useState(false);
+
+  const [ editObj, setEditObj ] = useState(undefined);
   
   function voteAnswer(id, delta) {
     setAnswers( answerList => 
@@ -64,6 +66,19 @@ function Main(props) {
     );
   }
 
+  function setEditAnswer(id) {
+    setEditObj( answers.find( e => e.id === id) );
+    setShowForm(true);
+  }
+
+  function saveExistingAnswer(answer) {
+    setAnswers( answerList => 
+      answerList.map( e => e.id === answer.id ? answer : e)
+    );
+    setShowForm(false);
+    setEditObj(undefined);
+  }
+
   return (<>
     <Row>
       <QuestionDescription question={question} />
@@ -75,13 +90,16 @@ function Main(props) {
     </Row>
     <Row>
       <Col>
-        <AnswerTable listOfAnswers={answers} vote={voteAnswer} delete={deleteAnswer} />
+        <AnswerTable listOfAnswers={answers} vote={voteAnswer} 
+        delete={deleteAnswer}  edit={setEditAnswer} />
       </Col>
     </Row>
     <Row>
       <Col>
           {showForm? <AnswerForm closeForm={()=> setShowForm(false)}
-            addAnswer={addAnswer}
+            addAnswer={addAnswer} editObj={editObj}
+            saveExistingAnswer={saveExistingAnswer}
+            key={editObj ? editObj.id : -1}
            /> 
           : <Button onClick={()=>setShowForm(true)}>Add</Button>}
       </Col>
