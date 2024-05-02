@@ -59,16 +59,13 @@ function Main(props) {
 
   function addAnswer(answer) {
     setAnswers( answerList => {
-      const newId = Math.max(...answerList.map(e=>e.id))+1;
+      // NB: max does not take an array but a set of parameters
+      const newId = Math.max(...answerList.map(e => e.id))+1;
       answer.id = newId;
       return [...answerList, answer];
     }
     );
-  }
-
-  function setEditAnswer(id) {
-    setEditObj( answers.find( e => e.id === id) );
-    setShowForm(true);
+  setShowForm(false);
   }
 
   function saveExistingAnswer(answer) {
@@ -77,6 +74,11 @@ function Main(props) {
     );
     setShowForm(false);
     setEditObj(undefined);
+  }
+
+  function setEditAnswer(id) {
+    setEditObj( answers.find( e => e.id === id) );
+    setShowForm(true);
   }
 
   return (<>
@@ -96,6 +98,8 @@ function Main(props) {
     </Row>
     <Row>
       <Col>
+          {/* key in AnswerForm is needed to make React re-create the component when editObj.id changes,
+            i.e., when the editing form is open and another edit button is pressed. */}
           {showForm? <AnswerForm closeForm={()=> setShowForm(false)}
             addAnswer={addAnswer} editObj={editObj}
             saveExistingAnswer={saveExistingAnswer}

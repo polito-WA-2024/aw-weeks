@@ -15,31 +15,36 @@ function AnswerForm(props) {
         event.preventDefault();
         //console.log('Submit was clicked');
 
-        if (score < 0) {
-            // deal with the error
+        // Form validation
+        if (date === '')
+            setErrorMsg('Invalid date');
+        else if (isNaN(parseInt(score)))
+            setErrorMsg('Invalid score');
+        else if (parseInt(score) < 0) {
             setErrorMsg('Negative scores are invalid');
         } else {
 
-        const e = {
-            text: text,
-            respondent: respondent,
-            score: score,
-            date: dayjs(date)
-        }
+            const e = {
+                text: text,
+                respondent: respondent,
+                score: parseInt(score),
+                date: dayjs(date)
+            }
 
-        if (props.editObj) {
-            e.id = props.editObj.id;
-            props.saveExistingAnswer(e);
-        } else {
-            props.addAnswer(e);
-            props.closeForm();
-        }
+
+            if (props.editObj) {  // decide if this is an edit or an add
+                e.id = props.editObj.id;
+                props.saveExistingAnswer(e);
+            } else {
+                props.addAnswer(e);
+                props.closeForm();
+            }
 
         }
     }
 
     function handleScore(event) {
-        setScore(parseInt(event.target.value));
+        setScore(event.target.value); // Cannot do parseInt here otherwise the single minus sign cannot be written
     }
 
     return (
