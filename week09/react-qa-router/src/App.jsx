@@ -7,7 +7,7 @@ import './App.css';
 
 import { AnswerTable } from './components/AnswerComponents.jsx';
 import { QuestionDescription } from './components/QuestionComponents.jsx';
-import { AnswerForm } from './components/FormComponents.jsx';
+import { FormRoute } from './components/FormComponents.jsx';
 
 import { Question } from './QAModels.js';
 
@@ -36,11 +36,6 @@ function MyFooter(props) {
   </footer>);
 }
 
-function FormRoute(props) {
-  return (
-    <AnswerForm addAnswer={props.addAnswer} />
-  );
-}
 
 function AnswerRoute(props) {   // former Main component
 
@@ -67,8 +62,7 @@ function AnswerRoute(props) {   // former Main component
     </Row>
     <Row>
       <Col>
-        <AnswerTable listOfAnswers={props.answerList} vote={props.voteAnswer} 
-        delete={props.deleteAnswer}  edit={props.setEditAnswer} />
+        <AnswerTable listOfAnswers={props.answerList} vote={props.voteAnswer} delete={props.deleteAnswer} />
       </Col>
     </Row>
     <Row>
@@ -93,7 +87,15 @@ function DefaultRoute(props) {
 
 function App() {
 
+    // state moved up into App
+
   const [ answers, setAnswers ] = useState(initialAnswerList);
+
+    // Not needed anymore, the info about the object are retrieved by using the id in the URL
+    //const [ editObj, setEditObj ] = useState(undefined);
+  
+    // Not needed anymore, this state is "sort of" substituted by the /add URL
+    //const [ showForm, setShowForm ] = useState(false);
 
   function voteAnswer(id, delta) {
     setAnswers( answerList => 
@@ -122,15 +124,16 @@ function App() {
     setAnswers( answerList => 
       answerList.map( e => e.id === answer.id ? answer : e)
     );
-    setShowForm(false);
-    setEditObj(undefined);
+    //setShowForm(false);
+    //setEditObj(undefined);
   }
 
+/*
   function setEditAnswer(id) {
     setEditObj( answers.find( e => e.id === id) );
     setShowForm(true);
   }
-
+*/
 
   return (
     <BrowserRouter>
@@ -138,11 +141,9 @@ function App() {
       <Route path='/' element={<Layout />}>
           <Route index element={ <AnswerRoute question={question} answerList={answers}
             voteAnswer={voteAnswer} deleteAnswer={deleteAnswer} /> } />
-          <Route path='add' element={ <FormRoute addAnswer={addAnswer} /> } />
-          {/*
-          <Route path='edit/:answerId' element={<FormRoute answerList={answers}
+          <Route path='/add' element={ <FormRoute addAnswer={addAnswer} /> } />
+          <Route path='/edit/:answerId' element={<FormRoute answerList={answers}
             addAnswer={addAnswer} editAnswer={saveExistingAnswer} />} />
-  */}
       </Route>
       <Route path='/*' element={<DefaultRoute />} />
     </Routes>

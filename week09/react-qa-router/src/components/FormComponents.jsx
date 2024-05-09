@@ -1,19 +1,40 @@
 import { useState } from 'react';
-import { Button, Form, Alert } from 'react-bootstrap';
+import { Button, Form, Alert, Row, Col } from 'react-bootstrap';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
+
+function FormRoute(props) {
+    return (
+        <Row>
+            <Col>
+                <AnswerForm addAnswer={props.addAnswer} editAnswer={props.editAnswer}
+                  answerList={props.answerList} />
+            </Col>
+        </Row>
+    );
+}
 
 function AnswerForm(props) {
     const navigate = useNavigate();
     
-    const [date, setDate] = useState(props.editObj? props.editObj.date.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));  //string: dayjs object is created only on submit
-    const [text, setText] = useState(props.editObj? props.editObj.text : '');
-    const [respondent, setRespondent] = useState(props.editObj? props.editObj.respondent : '');
-    const [score, setScore] = useState(props.editObj? props.editObj.score : 0);
+    /* If we have an answerId in the URL, we retrieve the answer to edit from the list.
+    In a full-stack application, starting from the answerId, 
+    we could query the back-end to retrieve all the answer data (updated to last value). */
+   
+    const { answerId } = useParams();
+    //console.log(answerId);
+    const objToEdit = answerId && props.answerList.find(e => e.id === parseInt(answerId));
+    //console.log(objToEdit);
+
+    const [date, setDate] = useState(objToEdit? objToEdit.date.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));  //string: dayjs object is created only on submit
+    const [text, setText] = useState(objToEdit? objToEdit.text : '');
+    const [respondent, setRespondent] = useState(objToEdit? objToEdit.respondent : '');
+    const [score, setScore] = useState(objToEdit? objToEdit.score : 0);
 
     const [errorMsg, setErrorMsg] = useState('');
 
     function handleSubmit(event) {
+        event.preventDefault();
         console.log('Submit was clicked');
 
         // Form validation
@@ -32,12 +53,13 @@ function AnswerForm(props) {
                 date: dayjs(date)
             }
 
-            console.log(e);
-            console.log(props.editObj);
+            //console.log(e);
+            //console.log(props.editObj);
 
-            if (props.editObj) {  // decide if this is an edit or an add
-                e.id = props.editObj.id;
-                props.saveExistingAnswer(e);
+            if (objToEdit) {  // decide if this is an edit or an add
+                e.id = objToEdit.id;
+                props.editAnswer(e);
+navigate('/');
             } else {
                 props.addAnswer(e);
                 navigate('/');
@@ -74,12 +96,14 @@ function AnswerForm(props) {
                 <Form.Control type="number" name="score" value={score} onChange={handleScore} />
             </Form.Group>
 
-            <Button type='submit' variant="primary">{props.editObj? 'Save' : 'Add'}</Button>
-            <Button variant='warning' onClick={()=>{navigate('/')}}>Cancel</Button>
+            <div className='my-2'>
+                <Button type='submit' variant="primary">{objToEdit? 'Save' : 'Add'}</Button>
+                <Button variant='warning' onClick={()=>{navigate('/')}}>Cancel</Button>
+            </div>
         </Form>
         </>
     );
 
 }
 
-export { AnswerForm };
+export { FormRoute };
