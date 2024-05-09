@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 
 function AnswerForm(props) {
+    const navigate = useNavigate();
     
     const [date, setDate] = useState(props.editObj? props.editObj.date.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));  //string: dayjs object is created only on submit
     const [text, setText] = useState(props.editObj? props.editObj.text : '');
@@ -12,8 +14,7 @@ function AnswerForm(props) {
     const [errorMsg, setErrorMsg] = useState('');
 
     function handleSubmit(event) {
-        event.preventDefault();
-        //console.log('Submit was clicked');
+        console.log('Submit was clicked');
 
         // Form validation
         if (date === '')
@@ -31,13 +32,15 @@ function AnswerForm(props) {
                 date: dayjs(date)
             }
 
+            console.log(e);
+            console.log(props.editObj);
 
             if (props.editObj) {  // decide if this is an edit or an add
                 e.id = props.editObj.id;
                 props.saveExistingAnswer(e);
             } else {
                 props.addAnswer(e);
-                props.closeForm();
+                navigate('/');
             }
 
         }
@@ -72,7 +75,7 @@ function AnswerForm(props) {
             </Form.Group>
 
             <Button type='submit' variant="primary">{props.editObj? 'Save' : 'Add'}</Button>
-            <Button variant='warning' onClick={props.closeForm}>Cancel</Button>
+            <Button variant='warning' onClick={()=>{navigate('/')}}>Cancel</Button>
         </Form>
         </>
     );

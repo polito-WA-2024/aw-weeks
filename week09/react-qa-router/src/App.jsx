@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useState } from 'react';
 import { Col, Container, Row, Navbar, Button } from 'react-bootstrap';
+import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom'; 
 import './App.css';
 
 import { AnswerTable } from './components/AnswerComponents.jsx';
@@ -35,16 +36,65 @@ function MyFooter(props) {
   </footer>);
 }
 
+function FormRoute(props) {
+  return (
+    <AnswerForm addAnswer={props.addAnswer} />
+  );
+}
+
+function AnswerRoute(props) {   // former Main component
 
 
-function Main(props) {
+  // ROUTES
+
+  //  /  =  initial page  (list of answers)
+  //  /add  =  show the form needed to add a new answer
+  //  /edit/:id  =  show the form to edit the answer identified by :id
+
+  //const [ showForm, setShowForm ] = useState(false);
+
+  //const [ editObj, setEditObj ] = useState(undefined);
+  
+
+  return (<>
+    <Row>
+      <QuestionDescription question={question} />
+    </Row>
+    <Row>
+      <Col>
+        <h2>Current Answers</h2>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        <AnswerTable listOfAnswers={props.answerList} vote={props.voteAnswer} 
+        delete={props.deleteAnswer}  edit={props.setEditAnswer} />
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        <Link to='/add'> 
+          <Button>Add</Button> 
+        </Link>
+      </Col>
+    </Row>
+  </>
+  );
+}
+
+function DefaultRoute(props) {
+  return (
+    <Container fluid>
+      <p className="my-2">No data here: This is not a valid page!</p>
+      <Link to='/'>Please go back to main page</Link>
+    </Container>
+  );
+}
+
+function App() {
 
   const [ answers, setAnswers ] = useState(initialAnswerList);
 
-  const [ showForm, setShowForm ] = useState(false);
-
-  const [ editObj, setEditObj ] = useState(undefined);
-  
   function voteAnswer(id, delta) {
     setAnswers( answerList => 
       answerList.map(e => e.id === id ? Object.assign({}, e, {score: e.score+delta}) : e)
@@ -65,7 +115,7 @@ function Main(props) {
       return [...answerList, answer];
     }
     );
-  setShowForm(false);
+  //setShowForm(false);
   }
 
   function saveExistingAnswer(answer) {
@@ -81,48 +131,34 @@ function Main(props) {
     setShowForm(true);
   }
 
-  return (<>
-    <Row>
-      <QuestionDescription question={question} />
-    </Row>
-    <Row>
-      <Col>
-        <h2>Current Answers</h2>
-      </Col>
-    </Row>
-    <Row>
-      <Col>
-        <AnswerTable listOfAnswers={answers} vote={voteAnswer} 
-        delete={deleteAnswer}  edit={setEditAnswer} />
-      </Col>
-    </Row>
-    <Row>
-      <Col>
-          {/* key in AnswerForm is needed to make React re-create the component when editObj.id changes,
-            i.e., when the editing form is open and another edit button is pressed. */}
-          {showForm? <AnswerForm closeForm={()=> setShowForm(false)}
-            addAnswer={addAnswer} editObj={editObj}
-            saveExistingAnswer={saveExistingAnswer}
-            key={editObj ? editObj.id : -1}
-           /> 
-          : <Button onClick={()=>setShowForm(true)}>Add</Button>}
-      </Col>
-    </Row>
-  </>
+
+  return (
+    <BrowserRouter>
+    <Routes>
+      <Route path='/' element={<Layout />}>
+          <Route index element={ <AnswerRoute question={question} answerList={answers}
+            voteAnswer={voteAnswer} deleteAnswer={deleteAnswer} /> } />
+          <Route path='add' element={ <FormRoute addAnswer={addAnswer} /> } />
+          {/*
+          <Route path='edit/:answerId' element={<FormRoute answerList={answers}
+            addAnswer={addAnswer} editAnswer={saveExistingAnswer} />} />
+  */}
+      </Route>
+      <Route path='/*' element={<DefaultRoute />} />
+    </Routes>
+  </BrowserRouter>
   );
 }
 
-
-function App() {
-
-  return (
-    <Container fluid>
+function Layout(props) {
+return (
+<Container fluid>
       <Row>
         <Col>
           <MyHeader />
         </Col>
       </Row>
-      <Main />
+      <Outlet />
       <Row>
         <Col>
           <MyFooter />
