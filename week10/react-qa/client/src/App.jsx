@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useEffect, useState } from 'react';
-import { Col, Container, Row, Navbar, Button } from 'react-bootstrap';
+import { Col, Container, Row, Navbar, Button, Spinner } from 'react-bootstrap';
 import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom'; 
 import './App.css';
 
@@ -41,6 +41,13 @@ function MyFooter(props) {
 function AnswerRoute(props) { 
 
   return (<>
+    <input type='text' value={props.questionId} onChange={
+       (ev)=>{ const newId = ev.target.value;
+        API.getQuestion(newId)
+          .then((q) => props.setQuestion(q));
+        props.setQuestionId(newId);
+       }
+      } />
     <Row>
       <QuestionDescription question={props.question} />
     </Row>
@@ -49,11 +56,13 @@ function AnswerRoute(props) {
         <h2>Current Answers</h2>
       </Col>
     </Row>
+    {props.loading?  <Spinner /> : 
     <Row>
       <Col>
         <AnswerTable listOfAnswers={props.answerList} vote={props.voteAnswer} delete={props.deleteAnswer} />
       </Col>
     </Row>
+}
     <Row>
       <Col>
         <Link to='/add'> 
@@ -75,18 +84,24 @@ function DefaultRoute(props) {
 }
 
 function App() {
+  const [ questionId, setQuestionId ] = useState(1);
+
   // state moved up into App
   const [ question, setQuestion ] = useState({});
   const [ answers, setAnswers ] = useState([]);
 
+  const [ loading, setLoading ] = useState(true);
+
   useEffect( () => {
-    const questionId = 1;
     API.getQuestion(questionId)
       .then((q) => setQuestion(q))
       .catch((err) => console.log(err));
 
     API.getAnswersByQuestionId(questionId)
-      .then((answerList) => setAnswers(answerList))
+      .then((answerList) => {
+        setAnswers(answerList);
+        setLoading(false);
+      })
       .catch((err) => console.log(err));
   }, []);
 
@@ -135,7 +150,11 @@ function App() {
     <Routes>
       <Route path='/' element={<Layout />}>
           <Route index element={ <AnswerRoute question={question} answerList={answers}
-            voteAnswer={voteAnswer} deleteAnswer={deleteAnswer} /> } />
+            voteAnswer={voteAnswer} deleteAnswer={deleteAnswer}
+            setQuestionId={setQuestionId} questionId={questionId}
+            setQuestion={setQuestion}
+            loading={loading}
+            /> } />
           <Route path='/add' element={ <FormRoute addAnswer={addAnswer} /> } />
           <Route path='/edit/:answerId' element={<FormRoute answerList={answers}
             addAnswer={addAnswer} editAnswer={saveExistingAnswer} />} />

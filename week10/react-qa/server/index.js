@@ -51,7 +51,7 @@ app.get('/api/questions/:id/answers', async (req, res) => {
       if (result.error)
         res.status(404).json(result);
       else
-        res.json(result);  // NB: list of answers can also be an empty array
+        setTimeout(()=>res.json(result), 2000);  // NB: list of answers can also be an empty array
     }
   } catch(err) {
     res.status(500).end();
