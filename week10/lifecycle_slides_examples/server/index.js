@@ -4,8 +4,11 @@ const flip = require('flip-text') ;
 
 const PORT = 3001;
 
-const app = express() ;
+const app = express();
 app.use(cors());
+
+//const corsOptions = { origin: 'http://localhost:5174' };
+//app.use(cors(corsOptions));
 
 app.get('/number',  (req,res)=>{
     const n = Math.floor(Math.random()*100)+1 ;

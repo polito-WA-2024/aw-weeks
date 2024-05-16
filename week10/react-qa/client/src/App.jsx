@@ -10,10 +10,11 @@ import { QuestionDescription } from './components/QuestionComponents.jsx';
 import { FormRoute } from './components/FormComponents.jsx';
 
 import { Question } from './QAModels.js';
+import API from './API.js';
 
-const initialQuestion = new Question(1, 'Best way of enumerating an array in JS?', 'Enrico', '2024-03-01');
-initialQuestion.init();
-const initialAnswerList = initialQuestion.getAnswers();
+//const initialQuestion = new Question(1, 'Best way of enumerating an array in JS?', 'Enrico', '2024-03-01');
+//initialQuestion.init();
+//const initialAnswerList = initialQuestion.getAnswers();
 
 
 function MyHeader(props) {
@@ -75,8 +76,20 @@ function DefaultRoute(props) {
 
 function App() {
   // state moved up into App
-  const [ question, setQuestion ] = useState(initialQuestion);
-  const [ answers, setAnswers ] = useState(initialAnswerList);
+  const [ question, setQuestion ] = useState({});
+  const [ answers, setAnswers ] = useState([]);
+
+  useEffect( () => {
+    const questionId = 1;
+    API.getQuestion(questionId)
+      .then((q) => setQuestion(q))
+      .catch((err) => console.log(err));
+
+    API.getAnswersByQuestionId(questionId)
+      .then((answerList) => setAnswers(answerList))
+      .catch((err) => console.log(err));
+  }, []);
+
 
 
   function voteAnswer(id, delta) {

@@ -4,6 +4,7 @@ const express = require('express');
 const morgan = require('morgan'); // logging middleware
 const {check, validationResult} = require('express-validator'); // validation middleware
 const dao = require('./dao'); // module for accessing the DB.  NB: use ./ syntax for files in the same dir
+const cors = require('cors');
 
 // init express
 const app = express();
@@ -12,7 +13,7 @@ const port = 3001;
 // set-up the middlewares
 app.use(morgan('dev'));
 app.use(express.json()); // To automatically decode incoming json
-
+app.use(cors());
 
 /*** APIs ***/
 
