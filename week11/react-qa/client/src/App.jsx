@@ -81,6 +81,7 @@ function App() {
   const [ question, setQuestion ] = useState({});
   const [ answers, setAnswers ] = useState([]);
 const [ initialLoading, setInitialLoading ] = useState(true);
+  const [dirty, setDirty ] = useState(false);
 
   useEffect( () => {
 const questionId = 1;
@@ -92,9 +93,10 @@ const questionId = 1;
       .then((answerList) => {
         setAnswers(answerList);
         setInitialLoading(false);
+        setDirty(false);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [dirty]);
 
 
 
@@ -105,20 +107,37 @@ const questionId = 1;
   }
 
   function deleteAnswer(id) {
+    //setAnswers( answerList =>
+    //  answerList.filter(e => e.id !== id)
+    //);
     setAnswers( answerList =>
-      answerList.filter(e => e.id !== id)
+      answerList.map(e => e.id === id ?  Object.assign({}, e, {status:'deleted'}) : e)
     );
+    try {
+      const del = async () => {
+        const res = await API.deleteAnswer(id);
+        setDirty(true);
+      }
+      del();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   function addAnswer(answer) {
+
     setAnswers( answerList => {
       // NB: max does not take an array but a set of parameters
       const newId = Math.max(...answerList.map(e => e.id))+1;
       answer.id = newId;
+      answer.status = 'added';
       return [...answerList, answer];
     }
     );
-  //setShowForm(false);
+    answer.questionId = question.id;
+    API.addAnswer(answer)
+      .then( ()=>{ setDirty(true); } );
+
   }
 
   function saveExistingAnswer(answer) {
