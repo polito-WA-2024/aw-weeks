@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useEffect, useState } from 'react';
-import { Col, Container, Row, Navbar, Button, Spinner } from 'react-bootstrap';
+import { Col, Container, Row, Navbar, Button, Spinner, Alert } from 'react-bootstrap';
 import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom'; 
 import './App.css';
 
@@ -43,6 +43,9 @@ function AnswerRoute(props) {
   return ( props.initialLoading? <Spinner className="m-2" />
     : 
     <>
+    {props.errorMsg? <Row><Col><Alert className="m-2" 
+      variant="danger" dismissible onClose={()=>props.setErrorMsg('')} >
+      {props.errorMsg}</Alert></Col></Row>: null}
     <Row>
       <QuestionDescription question={props.question} />
     </Row>
@@ -80,23 +83,44 @@ function App() {
   // state moved up into App
   const [ question, setQuestion ] = useState({});
   const [ answers, setAnswers ] = useState([]);
-const [ initialLoading, setInitialLoading ] = useState(true);
-  const [dirty, setDirty ] = useState(false);
+  const [ initialLoading, setInitialLoading ] = useState(true);
+  const [dirty, setDirty ] = useState(true);
+
+  const [ errorMsg, setErrorMsg ] = useState('');
+
+  function handleError(err) {
+    console.log(err);
+    let errMsg = 'Unkwnown error';
+    if (err.errors)
+      if (err.errors[0].msg)
+        errMsg = err.errors[0].msg;
+    else if (err.error)
+      errMsg = err.error;
+        
+    setErrorMsg(errMsg);
+
+    setTimeout( ()=> setDirty(true), 2000);
+
+  }
 
   useEffect( () => {
-const questionId = 1;
+    const questionId = 1;
     API.getQuestion(questionId)
       .then((q) => setQuestion(q))
       .catch((err) => console.log(err));
+  }, []);
 
-    API.getAnswersByQuestionId(questionId)
-      .then((answerList) => {
-        setAnswers(answerList);
-        setInitialLoading(false);
-        setDirty(false);
-      })
-      .catch((err) => console.log(err));
-  }, [dirty]);
+  useEffect( () => {
+    if (question.id && dirty) {
+      API.getAnswersByQuestionId(question.id)
+        .then((answerList) => {
+          setAnswers(answerList);
+          setInitialLoading(false);
+          setDirty(false);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [question.id, dirty]);
 
 
 
@@ -120,7 +144,7 @@ const questionId = 1;
       }
       del();
     } catch (err) {
-      console.log(err);
+      handleError(err);
     }
   }
 
@@ -136,16 +160,20 @@ const questionId = 1;
     );
     answer.questionId = question.id;
     API.addAnswer(answer)
-      .then( ()=>{ setDirty(true); } );
+      .then( ()=>{ setDirty(true); } )
+      .catch( (err) => handleError(err));
 
   }
 
   function saveExistingAnswer(answer) {
     setAnswers( answerList => 
-      answerList.map( e => e.id === answer.id ? answer : e)
+      answerList.map( e => e.id === answer.id ? {...answer, status: 'updated'} : e)
     );
-    //setShowForm(false);
-    //setEditObj(undefined);
+    API.updateAnswer(answer)
+      .then(()=> setDirty(true))
+      .catch((err)=> handleError(err));
+
+
   }
 
 
@@ -154,7 +182,8 @@ const questionId = 1;
     <Routes>
       <Route path='/' element={<Layout />}>
           <Route index element={ <AnswerRoute question={question} answerList={answers}
-            voteAnswer={voteAnswer} deleteAnswer={deleteAnswer} initialLoading={initialLoading} /> } />
+            voteAnswer={voteAnswer} deleteAnswer={deleteAnswer} initialLoading={initialLoading}
+            errorMsg={errorMsg} setErrorMsg={setErrorMsg} /> } />
           <Route path='/add' element={ <FormRoute addAnswer={addAnswer} /> } />
           <Route path='/edit/:answerId' element={<FormRoute answerList={answers}
             addAnswer={addAnswer} editAnswer={saveExistingAnswer} />} />

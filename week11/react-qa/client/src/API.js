@@ -75,7 +75,8 @@ async function getAnswersByQuestionId(id) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(Object.assign({}, answer, {date: answer.date.format("YYYY-MM-DD")})),
+        body: JSON.stringify(Object.assign({}, answer, {date: answer.date.format("YYYY-MM-DD")}))
+        //body: ''
       }).then((response) => {
         if (response.ok) {
           response.json()
