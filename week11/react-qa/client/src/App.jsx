@@ -112,6 +112,8 @@ function App() {
 
   useEffect( () => {
     if (question.id && dirty) {
+    // && dirty is inserted to avoid a second (useless) call to the get API when dirty is already false
+
       API.getAnswersByQuestionId(question.id)
         .then((answerList) => {
           setAnswers(answerList);
@@ -128,6 +130,9 @@ function App() {
     setAnswers( answerList => 
       answerList.map(e => e.id === id ? Object.assign({}, e, {score: e.score+delta}) : e)
     );
+    API.voteAnswer(id, delta)
+      .then(() => setDirty(true))
+      .catch((err) => handleError(err));
   }
 
   function deleteAnswer(id) {
