@@ -177,12 +177,12 @@ app.post('/api/answers', [
       score: req.body.score,
       date: req.body.date,
       text: req.body.text,
-      respondent: req.body.respondent,
+      respondentId: 1,      // It was:  req.body.respondent,
     };
 
     try {
       const newAnswer = await dao.createAnswer(answer);
-      setTimeout(()=>res.status(201).json(answerId), answerDelay);
+      setTimeout(()=>res.status(201).json(newAnswer.id), answerDelay);
     } catch (err) {
       res.status(503).json({ error: `Database error during the creation of answer ${answer.text} by ${answer.respondent}.` });
     }
@@ -193,8 +193,9 @@ app.post('/api/answers', [
 // PUT /api/answers/<id>
 app.put('/api/answers/:id', [
   check('score').isInt(),
-  check('respondent').isLength({min: 1}),   // as an example
+  //check('respondent').isLength({min: 1}),   // as an example
   check('date').isDate({format: 'YYYY-MM-DD', strictMode: true}),
+  check('respondentId').isInt(),
   check('id').isInt()
 ], async (req, res) => {
   const errors = validationResult(req);

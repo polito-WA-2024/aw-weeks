@@ -146,8 +146,8 @@ exports.createAnswer = (answer) => {
 exports.updateAnswer = (answer) => {
   //console.log('updateAnswer: '+JSON.stringify(answer));
   return new Promise((resolve, reject) => {
-    const sql = 'UPDATE answers SET text=?, respondent=?, score=?, date=DATE(?) WHERE id = ?';
-    db.run(sql, [answer.text, answer.respondent, answer.score, answer.date, answer.id], function (err) {
+    const sql = 'UPDATE answers SET text=?, respondentId=?, score=?, date=DATE(?) WHERE id = ?';
+    db.run(sql, [answer.text, answer.respondentId, answer.score, answer.date, answer.id], function (err) {
       if (err) {
         reject(err);
         return;

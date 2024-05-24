@@ -49,6 +49,7 @@ function AnswerForm(props) {
             const e = {
                 text: text,
                 respondent: respondent,
+                respondentId: objToEdit? objToEdit.respondentId : 1,
                 score: parseInt(score),
                 date: dayjs(date)
             }
