@@ -143,11 +143,12 @@ exports.createAnswer = (answer) => {
 };
 
 // update an existing answer
-exports.updateAnswer = (answer) => {
+exports.updateAnswer = (answer, userId) => {
   //console.log('updateAnswer: '+JSON.stringify(answer));
   return new Promise((resolve, reject) => {
-    const sql = 'UPDATE answers SET text=?, respondentId=?, score=?, date=DATE(?) WHERE id = ?';
-    db.run(sql, [answer.text, answer.respondentId, answer.score, answer.date, answer.id], function (err) {
+    const sql = 'UPDATE answers SET text=?, score=?, date=DATE(?) WHERE id = ? AND respondentId = ?';  
+    // It is MANDATORY to check that the answer belongs to the userId
+    db.run(sql, [answer.text, answer.score, answer.date, answer.id, userId], function (err) {
       if (err) {
         reject(err);
         return;
@@ -176,7 +177,8 @@ exports.voteAnswer = (answerId, vote) => {
 // delete an existing answer
 exports.deleteAnswer = (id, userId) => {
   return new Promise((resolve, reject) => {
-    const sql = 'DELETE FROM answers WHERE id = ? AND respondentId = ?';
+    const sql = 'DELETE FROM answers WHERE id = ? AND respondentId = ?';  // Double-check that the answer belongs to the userId
+    // It is MANDATORY to check that the answer belongs to the userId
     db.run(sql, [id, userId], function (err) {
       if (err) {
         reject(err);

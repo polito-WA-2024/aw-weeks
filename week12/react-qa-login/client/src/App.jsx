@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Navbar, Button, Spinner, Alert } from 'react-bootstrap';
-import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom'; 
+import { BrowserRouter, Routes, Route, Outlet, Link, Navigate } from 'react-router-dom'; 
 import './App.css';
 
 import { AnswerTable } from './components/AnswerComponents.jsx';
@@ -22,11 +22,11 @@ function MyHeader(props) {
   const name = props.user && props.user.name;
 
 	return (
-		<Navbar bg="primary" variant="dark">
+		<Navbar bg="primary" variant="dark" className="d-flex justify-content-between">
       <Navbar.Brand className="mx-2">
-      <i className="bi bi-collection-play" />
-      {/* props.appName just in case you want to set a different app name */}
-			{props.appName || "HeapOverrun"}
+        <i className="bi bi-collection-play" />
+        {/* props.appName just in case you want to set a different app name */}
+        {props.appName || "HeapOverrun"}
       </Navbar.Brand>
       {name ? <div>
         <Navbar.Text className='fs-5'>
@@ -119,7 +119,12 @@ function App() {
     }
     setErrorMsg(errMsg);
 
-    setTimeout(()=>setDirty(true), 2000);  // Fetch the current version from server, after a while
+    if (errMsg === 'Not authenticated')
+      setTimeout(() => {  // do logout in the app state
+        setUser(undefined); setLoggedIn(false); setDirty(true)
+      }, 2000);
+    else
+      setTimeout(()=>setDirty(true), 2000);  // Fetch the current version from server, after a while
   }
 
 
@@ -186,6 +191,7 @@ function App() {
       const newId = Math.max(...answerList.map(e => e.id))+1;
       answer.questionId = question.id;   // Do not forget to add the question ID to which the answer is connected
       answer.id = newId;
+      answer.respondent = user.name;
       answer.status = 'added';
       return [...answerList, answer];
     }
@@ -197,7 +203,7 @@ function App() {
 
   function saveExistingAnswer(answer) {
     setAnswers( answerList => 
-      answerList.map( e => e.id === answer.id ? { ...answer, status: 'updated'} : e)
+      answerList.map( e => e.id === answer.id ? { ...answer, respondent: user.name, status: 'updated'} : e)
     );
     API.updateAnswer(answer)
       .then(() => setDirty(true))
@@ -209,12 +215,13 @@ function App() {
     setLoggedIn(false);
     setUser(undefined);
     // setDirty ... ?
+    /* set state to empty if appropriate */
   }
 
   const loginSuccessful = (user) => {
     setUser(user);
     setLoggedIn(true);
-    setDirty(true);
+    setDirty(true);  // load latest version of data, if appropriate
   }
 
   return (
@@ -229,7 +236,7 @@ function App() {
           <Route path='/edit/:answerId' element={<FormRoute answerList={answers}
             addAnswer={addAnswer} editAnswer={saveExistingAnswer} />} />
       </Route>
-      <Route path='/login' element={<LoginForm loginSuccessful={loginSuccessful} />} />
+      <Route path='/login' element={loggedIn? <Navigate replace to='/' />:  <LoginForm loginSuccessful={loginSuccessful} />} />
       <Route path='/*' element={<DefaultRoute />} />
     </Routes>
   </BrowserRouter>

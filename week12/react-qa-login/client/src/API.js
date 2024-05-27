@@ -69,6 +69,7 @@ async function getAnswersByQuestionId(id) {
     return new Promise((resolve, reject) => {
       fetch(URL+`/answers`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -93,7 +94,7 @@ async function getAnswersByQuestionId(id) {
     return new Promise((resolve, reject) => {
       fetch(URL+`/answers/${id}`, {
         method: 'DELETE',
-        credentials: 'include'
+        credentials: 'include',
       }).then((response) => {
         if (response.ok) {
           resolve(null);
@@ -112,6 +113,7 @@ async function getAnswersByQuestionId(id) {
     return new Promise((resolve, reject) => {
       fetch(URL+`/answers/${answer.id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

@@ -157,9 +157,9 @@ app.get('/api/answers/:id', async (req, res) => {
 
 
 // POST /api/answers
-app.post('/api/answers', [
+app.post('/api/answers', isLoggedIn, [
   check('score').isInt(),
-  check('respondent').isLength({min: 1}),   // as an example
+  //check('respondent').isLength({min: 1}),   // as an example
   check('date').isDate({format: 'YYYY-MM-DD', strictMode: true})
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -177,12 +177,13 @@ app.post('/api/answers', [
       score: req.body.score,
       date: req.body.date,
       text: req.body.text,
-      respondentId: 1,      // It was:  req.body.respondent,
+      respondentId: req.user.id  //before getting it from the session;   was req.body.respondent,
     };
+    //console.log('app.post answer: '+JSON.stringify(answer));
 
     try {
       const newAnswer = await dao.createAnswer(answer);
-      setTimeout(()=>res.status(201).json(newAnswer.id), answerDelay);
+      setTimeout(()=>res.status(201).json(newAnswer), answerDelay);
     } catch (err) {
       res.status(503).json({ error: `Database error during the creation of answer ${answer.text} by ${answer.respondent}.` });
     }
@@ -191,11 +192,11 @@ app.post('/api/answers', [
 
 
 // PUT /api/answers/<id>
-app.put('/api/answers/:id', [
+app.put('/api/answers/:id', isLoggedIn, [
   check('score').isInt(),
+  //The respondent is now the logged in user
   //check('respondent').isLength({min: 1}),   // as an example
   check('date').isDate({format: 'YYYY-MM-DD', strictMode: true}),
-  check('respondentId').isInt(),
   check('id').isInt()
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -209,7 +210,8 @@ app.put('/api/answers/:id', [
   answer.id = req.params.id;
 
   try {
-    const numRowChanges = await dao.updateAnswer(answer);
+    const numRowChanges = await dao.updateAnswer(answer, req.user.id);  // It is WRONG to use something different from req.user.id, do not send it from client!
+    // NB: the query in the DB will check if the answer belongs to the authenticated user and not another, using WHERE respondentId=...
     setTimeout(()=>res.json(numRowChanges), answerDelay);
     //res.status(200).end();
   } catch(err) {
@@ -222,6 +224,7 @@ app.put('/api/answers/:id', [
 
 // POST /api/answers/<id>/vote
 // NOTE: this is a POST, not a PUT, since it is NOT idempotent
+// Everybody can vote any answer, so authentication is not required
 app.post('/api/answers/:id/vote', [
   check('id').isInt(),
   check('vote').isIn(['upvote','downvote'])

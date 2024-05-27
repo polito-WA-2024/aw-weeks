@@ -17,7 +17,7 @@ Content-Type: application/json
 
 {
     "text": "Text of the new answer",
-    "respondent": "Bob",
+    "respondentId": 1,
     "score": 0,
     "date": "2024-05-06",
     "questionId":1
@@ -28,7 +28,7 @@ Content-Type: application/json
 
 {
     "text": "Another text for the answer",
-    "respondent": "Bob",
+    "respondentId": 1,
     "score": 950,
     "date": "2024-05-06",
     "questionId":1

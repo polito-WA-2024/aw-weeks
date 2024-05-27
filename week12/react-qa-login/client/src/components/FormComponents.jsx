@@ -28,7 +28,7 @@ function AnswerForm(props) {
 
     const [date, setDate] = useState(objToEdit? objToEdit.date.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));  //string: dayjs object is created only on submit
     const [text, setText] = useState(objToEdit? objToEdit.text : '');
-    const [respondent, setRespondent] = useState(objToEdit? objToEdit.respondent : '');
+    //const [respondent, setRespondent] = useState(objToEdit? objToEdit.respondent : '');
     const [score, setScore] = useState(objToEdit? objToEdit.score : 0);
 
     const [errorMsg, setErrorMsg] = useState('');
@@ -48,8 +48,7 @@ function AnswerForm(props) {
 
             const e = {
                 text: text,
-                respondent: respondent,
-                respondentId: objToEdit? objToEdit.respondentId : 1,
+                //respondent: respondent,
                 score: parseInt(score),
                 date: dayjs(date)
             }
@@ -86,12 +85,12 @@ navigate('/');
                 <Form.Label>Text</Form.Label>
                 <Form.Control type="text" name="text" value={text} onChange={(event)=> setText(event.target.value)} />
             </Form.Group>
-
+{/*
             <Form.Group>
                 <Form.Label>Respondent</Form.Label>
                 <Form.Control type="text" name="respondent" value={respondent} onChange={(event) => setRespondent(event.target.value)} />
             </Form.Group>
-
+*/}
             <Form.Group>
                 <Form.Label>Score</Form.Label>
                 <Form.Control type="number" name="score" value={score} onChange={handleScore} />
