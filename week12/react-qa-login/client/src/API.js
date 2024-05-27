@@ -93,6 +93,7 @@ async function getAnswersByQuestionId(id) {
     return new Promise((resolve, reject) => {
       fetch(URL+`/answers/${id}`, {
         method: 'DELETE',
+        credentials: 'include'
       }).then((response) => {
         if (response.ok) {
           resolve(null);

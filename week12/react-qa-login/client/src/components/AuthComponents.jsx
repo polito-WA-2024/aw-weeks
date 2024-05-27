@@ -15,6 +15,7 @@ function LoginForm(props) {
       .then( user => {
         setErrorMessage('');
         props.loginSuccessful(user);
+        navigate('/');
       })
       .catch(err => {
         // NB: Generic error message, should not give additional info (e.g., if user exists etc.)

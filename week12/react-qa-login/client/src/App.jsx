@@ -11,6 +11,7 @@ import { FormRoute } from './components/FormComponents.jsx';
 
 import { Question } from './QAModels.js';
 import API from './API.js';
+import { LoginForm } from './components/AuthComponents.jsx';
 
 //const initialQuestion = new Question(1, 'Best way of enumerating an array in JS?', 'Enrico', '2024-03-01');
 //initialQuestion.init();
@@ -18,6 +19,8 @@ import API from './API.js';
 
 
 function MyHeader(props) {
+  const name = props.user && props.user.name;
+
 	return (
 		<Navbar bg="primary" variant="dark">
       <Navbar.Brand className="mx-2">
@@ -25,8 +28,17 @@ function MyHeader(props) {
       {/* props.appName just in case you want to set a different app name */}
 			{props.appName || "HeapOverrun"}
       </Navbar.Brand>
-		</Navbar>
-	);
+      {name ? <div>
+        <Navbar.Text className='fs-5'>
+          {"Signed in as: " + name}
+        </Navbar.Text>
+        <Button className='mx-2' variant='danger' onClick={props.logout}>Logout</Button>
+      </div> :
+        <Link to='/login'>
+          <Button className='mx-2' variant='warning'>Login</Button>
+        </Link>}
+    </Navbar>
+  );
 }
 
 
@@ -57,7 +69,7 @@ function AnswerRoute(props) {
     <Row>
       <Col>
         <AnswerTable listOfAnswers={props.answerList} vote={props.voteAnswer} delete={props.deleteAnswer}
-             errorMsg={props.errorMsg} />
+             errorMsg={props.errorMsg} user={props.user} />
       </Col>
     </Row>
     <Row>
@@ -90,6 +102,9 @@ function App() {
 
   const [ errorMsg, setErrorMsg ] = useState('');
 
+  const [user, setUser ] = useState(undefined);
+  const [loggedIn, setLoggedIn] = useState(false);
+
   function handleError(err) {
     console.log('handleError: ',err);
     let errMsg = 'Unkwnown error';
@@ -108,12 +123,28 @@ function App() {
   }
 
 
+  useEffect(()=> {
+    const checkAuth = async() => {
+      try {
+        // here you have the user info, if already logged in
+        const user = await API.getUserInfo();
+        setLoggedIn(true);
+        setUser(user);
+      } catch(err) {
+        // NO need to do anything: user is simply not yet authenticated
+        //handleError(err);
+      }
+    };
+    checkAuth();
+  }, []);
+
+
   useEffect( () => {
     const questionId = 1;
     API.getQuestion(questionId)
       .then((q) => setQuestion(q))
       .catch((err) => handleError(err));
-  }, []);
+}, []);
 
   useEffect(() => {
     if (question.id && dirty) {    
@@ -173,18 +204,32 @@ function App() {
       .catch((err) => handleError(err));
   }
 
+  const doLogOut = async () => {
+    await API.logOut();
+    setLoggedIn(false);
+    setUser(undefined);
+    // setDirty ... ?
+  }
+
+  const loginSuccessful = (user) => {
+    setUser(user);
+    setLoggedIn(true);
+    setDirty(true);
+  }
 
   return (
     <BrowserRouter>
     <Routes>
-      <Route path='/' element={<Layout />}>
+      <Route path='/' element={<Layout user={user} loggedIn={loggedIn} logout={doLogOut} />}>
           <Route index element={ <AnswerRoute question={question} answerList={answers}
             voteAnswer={voteAnswer} deleteAnswer={deleteAnswer} initialLoading={initialLoading}
-            errorMsg={errorMsg} setErrorMsg={setErrorMsg} /> } />
+            errorMsg={errorMsg} setErrorMsg={setErrorMsg}
+            user={user} /> } />
           <Route path='/add' element={ <FormRoute addAnswer={addAnswer} /> } />
           <Route path='/edit/:answerId' element={<FormRoute answerList={answers}
             addAnswer={addAnswer} editAnswer={saveExistingAnswer} />} />
       </Route>
+      <Route path='/login' element={<LoginForm loginSuccessful={loginSuccessful} />} />
       <Route path='/*' element={<DefaultRoute />} />
     </Routes>
   </BrowserRouter>
@@ -196,7 +241,7 @@ return (
 <Container fluid>
       <Row>
         <Col>
-          <MyHeader />
+          <MyHeader user={props.user} loggedIn={props.loggedIn} logout={props.logout} />
         </Col>
       </Row>
       <Outlet />

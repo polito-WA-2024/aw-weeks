@@ -174,10 +174,10 @@ exports.voteAnswer = (answerId, vote) => {
 
 
 // delete an existing answer
-exports.deleteAnswer = (id) => {
+exports.deleteAnswer = (id, userId) => {
   return new Promise((resolve, reject) => {
-    const sql = 'DELETE FROM answers WHERE id = ?';
-    db.run(sql, [id], function (err) {
+    const sql = 'DELETE FROM answers WHERE id = ? AND respondentId = ?';
+    db.run(sql, [id, userId], function (err) {
       if (err) {
         reject(err);
         return;

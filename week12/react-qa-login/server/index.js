@@ -244,7 +244,7 @@ app.post('/api/answers/:id/vote', [
 
 
 // DELETE /api/answers/<id>
-app.delete('/api/answers/:id', [
+app.delete('/api/answers/:id', isLoggedIn, [
   check('id').isInt()
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -252,7 +252,7 @@ app.delete('/api/answers/:id', [
     return res.status(422).json({errors: errors.array()});
   }
   try {
-    const numRowChanges = await dao.deleteAnswer(req.params.id);  
+    const numRowChanges = await dao.deleteAnswer(req.params.id, req.user.id);  
     // NOTE: if there is no element with the specified id, the delete operation is considered successful
     // since the final status of the server is that the element with that id does not exist.
     // This is also consistent with the fact that DELETE should be idempotent.
