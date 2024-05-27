@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Navbar, Button, Spinner, Alert } from 'react-bootstrap';
-import { BrowserRouter, Routes, Route, Outlet, Link, Navigate } from 'react-router-dom'; 
+import { BrowserRouter, Routes, Route, Outlet, Link, Navigate, useNavigate } from 'react-router-dom'; 
 import './App.css';
 
 import { AnswerTable } from './components/AnswerComponents.jsx';
@@ -52,6 +52,8 @@ function MyFooter(props) {
 
 function AnswerRoute(props) { 
 
+  const navigate = useNavigate();
+
   return ( props.initialLoading? <Spinner className="m-2" />
     : 
     <>
@@ -74,9 +76,7 @@ function AnswerRoute(props) {
     </Row>
     <Row>
       <Col>
-        <Link to='/add'> 
-          <Button>Add</Button> 
-        </Link>
+          <Button disabled={props.user? false: true} onClick={()=>navigate('/add')}>Add</Button> 
       </Col>
     </Row>
   </>
