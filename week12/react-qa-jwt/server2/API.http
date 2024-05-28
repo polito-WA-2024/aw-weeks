@@ -1,0 +1,32 @@
+# NB: ALL THESE TOKENS needs to be re-generated because they are expired!
+
+POST http://localhost:3002/api/suggestions HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJwcmVtaXVtIiwiYXV0aElkIjoxMjM0LCJpYXQiOjE3MTY2NDgwNDMsImV4cCI6MTcxNjY0ODEwM30.oOVCsKf_Ua7DRHlVRBrmg9mU0sxaf3fN37JphyxTwLw
+Content-Type: application/json
+
+{ "question": "Best JS version?" }
+
+###
+# basic access level token
+POST http://localhost:3002/api/suggestions HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJwcmVtaXVtIiwiYXV0aElkIjoxMjM0LCJpYXQiOjE3MTY2NDgwNDMsImV4cCI6MTcxNjY0ODEwM30.oOVCsKf_Ua7DRHlVRBrmg9mU0sxaf3fN37JphyxTwLw
+Content-Type: application/json
+
+{ "question": "Best JS version?" }
+
+###
+# expired token
+POST http://localhost:3002/api/suggestions HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJwcmVtaXVtIiwiYXV0aElkIjoxMjM0LCJpYXQiOjE3MTY2NDgwNDMsImV4cCI6MTcxNjY0ODEwM30.oOVCsKf_Ua7DRHlVRBrmg9mU0sxaf3fN37JphyxTwLw
+Content-Type: application/json
+
+{ "question": "Best JS version?" }
+
+###
+# invalid token signature
+POST http://localhost:3002/api/suggestions HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJwcmVtaXVtIiwiYXV0aElkIjoxMjM0LCJpYXQiOjE3MTY2NDgwNDMsImV4cCI6MTcxNjY0ODEwM30.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+Content-Type: application/json
+
+{ "question": "Best JS version?" }
+
