@@ -13,9 +13,31 @@ import { Question } from './QAModels.js';
 import API from './API.js';
 import { LoginForm } from './components/AuthComponents.jsx';
 
-//const initialQuestion = new Question(1, 'Best way of enumerating an array in JS?', 'Enrico', '2024-03-01');
-//initialQuestion.init();
-//const initialAnswerList = initialQuestion.getAnswers();
+function ExternalInfo(props) {
+  const initialInfo = 'n/a (not available)';
+  const [info, setInfo ] = useState(initialInfo);
+
+
+  const loadInfo = (authToken) => {
+    API.getSuggestion(authToken, props.question.text)
+    .then((res) => setInfo(res.text))
+    .catch((err) => {console.log(err); setInfo(initialInfo); props.renewToken(); })
+  }
+ 
+  useEffect( () => {
+    if (props.authToken)
+      loadInfo(props.authToken);
+  }, [props.authToken]);
+
+  return (
+
+    <div>
+      <h4 className='bg-light'>Suggestion:
+        <i className='bi-arrow-clockwise mx-2' onClick={() => { loadInfo(props.authToken) }}></i>
+        <span className='text-secondary fs-5'>{info}</span></h4>
+    </div>
+  );
+}
 
 
 function MyHeader(props) {
@@ -65,6 +87,12 @@ function AnswerRoute(props) {
     </Row>
     <Row>
       <Col>
+        {props.authToken? 
+        <ExternalInfo authToken={props.authToken} question={props.question} renewToken={props.renewToken} /> : null}
+      </Col>
+    </Row>
+    <Row>
+      <Col>
         <h2>Current Answers</h2>
       </Col>
     </Row>
@@ -105,6 +133,8 @@ function App() {
   const [user, setUser ] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
 
+  const [authToken, setAuthToken] = useState(null);
+
   function handleError(err) {
     console.log('handleError: ',err);
     let errMsg = 'Unkwnown error';
@@ -127,6 +157,12 @@ function App() {
       setTimeout(()=>setDirty(true), 2000);  // Fetch the current version from server, after a while
   }
 
+  const renewToken = () => {
+    API.getAuthToken()
+      .then((resp) => setAuthToken(resp.token))
+      .catch(()=>{});
+  };
+
 
   useEffect(()=> {
     const checkAuth = async() => {
@@ -135,6 +171,7 @@ function App() {
         const user = await API.getUserInfo();
         setLoggedIn(true);
         setUser(user);
+        renewToken();
       } catch(err) {
         // NO need to do anything: user is simply not yet authenticated
         //handleError(err);
@@ -216,13 +253,19 @@ function App() {
     setUser(undefined);
     // setDirty ... ?
     /* set state to empty if appropriate */
+    setAuthToken('');  // NB: this does not invalidate token, it just removes it from the app
+
   }
 
   const loginSuccessful = (user) => {
     setUser(user);
     setLoggedIn(true);
     setDirty(true);  // load latest version of data, if appropriate
+    API.getAuthToken().then((resp) => setAuthToken(resp.token)).catch(()=>{});
   }
+
+
+
 
   return (
     <BrowserRouter>
@@ -231,6 +274,7 @@ function App() {
           <Route index element={ <AnswerRoute question={question} answerList={answers}
             voteAnswer={voteAnswer} deleteAnswer={deleteAnswer} initialLoading={initialLoading}
             errorMsg={errorMsg} setErrorMsg={setErrorMsg}
+            authToken={authToken} renewToken={renewToken}
             user={user} /> } />
           <Route path='/add' element={ <FormRoute addAnswer={addAnswer} /> } />
           <Route path='/edit/:answerId' element={<FormRoute answerList={answers}

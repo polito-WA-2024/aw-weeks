@@ -14,6 +14,11 @@ const session = require('express-session'); // enable sessions
 const dao = require('./dao'); // module for accessing the DB.  NB: use ./ syntax for files in the same dir
 const userDao = require('./dao-user'); // module for accessing the user info in the DB
 
+const jsonwebtoken = require('jsonwebtoken');
+const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYxsvX';
+const expireTime = 60; //seconds
+
+
 const answerDelay = 500;  // To be put to 0 for the exam submission
 
 // init express
@@ -314,6 +319,20 @@ app.get('/api/sessions/current', (req, res) => {  if(req.isAuthenticated()) {
   else
     res.status(401).json({error: 'Unauthenticated user!'});;
 });
+
+
+/*** Token ***/
+
+// GET /api/auth-token
+app.get('/api/auth-token', isLoggedIn, (req, res) => {
+  let authLevel = req.user.level;
+
+  const payloadToSign = { access: authLevel, authId: 1234 };
+  const jwtToken = jsonwebtoken.sign(payloadToSign, jwtSecret, {expiresIn: expireTime});
+
+  res.json({token: jwtToken, authLevel: authLevel});  // authLevel is just for debug. Anyway it is in the JWT payload
+});
+
 
 
 /*** Other express-related instructions ***/

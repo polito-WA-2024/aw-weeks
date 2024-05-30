@@ -10,8 +10,8 @@ const jwtSecret = '6xvL4xkAAbG49hcXf5GIYSvkDICiUAR6EdR5dLdwW7hMzUjjMUe9t6M5kSAYx
 
 // THIS IS FOR DEBUGGING ONLY: when you start the server, generate a valid token to do tests, and print it to the console
 //This is used to create the token
-const jsonwebtoken = require('jsonwebtoken');
-const expireTime = 60; //seconds
+//const jsonwebtoken = require('jsonwebtoken');
+//const expireTime = 60; //seconds
 //const token = jsonwebtoken.sign( { access: 'premium', authId: 1234 }, jwtSecret, {expiresIn: expireTime});
 //console.log(token);
 
@@ -54,7 +54,7 @@ app.use( function (err, req, res, next) {
 
 // POST /api/suggestions
 app.post('/api/suggestions', (req, res) => {
-  //console.log('DEBUG: req.auth: ',req.auth);
+  console.log('DEBUG: req.auth: ',req.auth);
   const authAccessLevel = req.auth.access;
   const q = req.body.question;
 
