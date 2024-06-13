@@ -1,42 +1,47 @@
-# Exam #1234: "Exam Title"
-## Student: s123456 LASTNAME FIRSTNAME 
+# Exam #1: "Study Plan"
+## Student: s500000 ENRICO MASALA 
 
 ## React Client Application Routes
 
-- Route `/`: page content and purpose
-- Route `/something/:param`: page content and purpose, param specification
-- ...
+- Route `/`: list of courses, accessible by anybody
+- Route `/login`: login form. After succest osful login, it redirects to ...
+- Route `/studyplan`: list of courses, with study plan (on the right)
+- Route `*`: not found page
 
 ## API Server
 
-- POST `/api/login`
+- GET `/api/courses`
+- GET `/api/study-plan`   (authenticated)
+  - Get full-time flag, + list of courses
+- POST `/api/study-plan`  (authenticated)   this is for replacing as well ("editing")
+  - Save full-time flag, + list of courses
+- DELETE `/api/study-plan`  (authenticated)
+- GET `/api/auth-token`    (authenticated)    what is inside the payload ? //TODO
+
+### Authentication APIs
+
+- POST `/api/session`
   - request parameters and request body content
   - response body content
-- GET `/api/something`
-  - request parameters
-  - response body content
-- POST `/api/something`
-  - request parameters and request body content
-  - response body content
-- ...
+  ...
 
 ## API Server2
 
-- GET `/api/something`
-  - request parameters
-  - response body content
+- GET `/api/stats`
+
 
 
 ## Database Tables
 
-- Table `users` - contains xx yy zz
-- Table `something` - contains ww qq ss
-- ...
+- Table `users` - (id), name, email, hash, salt, fulltime
+- Table `studyplan` - (course_id, user_id)
+- Table `courses` - (course_id), name, cfu, maxstudents, mandatory
+- Table `incompats` - (course_id, incompat_course_id)
 
 ## Main React Components
 
-- `ListOfSomething` (in `List.js`): component purpose and main functionality
-- `GreatButton` (in `GreatButton.js`): component purpose and main functionality
+- `CourseList` (in `List.js`): component purpose and main functionality
+- `StudyPlan` (in `GreatButton.js`): component purpose and main functionality
 - ...
 
 (only _main_ components, minor ones may be skipped)
